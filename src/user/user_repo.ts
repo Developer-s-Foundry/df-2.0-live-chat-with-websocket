@@ -19,11 +19,9 @@ export const userRepo = {
     if (user) {
       const isMatch = await bcrypt.compare(password, user.password);
       if (isMatch) {
-        return user;
-      } else {
-        return null;
-      }
+        throw new Error('Invalid credentials');
+      } 
     }
-    return null;
+    return user;
   }
 };
