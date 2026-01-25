@@ -1,0 +1,139 @@
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 900px;
+        height: 500px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        display: flex;
+        overflow: hidden;
+    }
+
+    .form-container {
+        width: 50%;
+        padding: 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .form-container h2 {
+        margin-bottom: 30px;
+        color: #333;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 8px;
+        color: #555;
+        font-weight: 500;
+    }
+
+    input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 14px;
+        transition: border-color 0.3s;
+    }
+
+    input:focus {
+        outline: none;
+        border-color: #667eea;
+    }
+
+    button {
+        width: 100%;
+        padding: 12px;
+        background: #667eea;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    button:hover {
+        background: #764ba2;
+    }
+
+    .toggle-text {
+        text-align: center;
+        margin-top: 15px;
+        font-size: 14px;
+        color: #666;
+    }
+
+    .toggle-text a {
+        color: #667eea;
+        cursor: pointer;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .info-section {
+        width: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .info-section h1 {
+        font-size: 28px;
+        margin-bottom: 20px;
+    }
+
+    .info-section p {
+        line-height: 1.6;
+        margin-bottom: 20px;
+    }
+
+    #login-form {
+        display: block;
+    }
+
+    #register-form {
+        display: none;
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            flex-direction: column;
+            height: auto;
+        }
+
+        .form-container,
+        .info-section {
+            width: 100%;
+        }
+
+        .info-section {
+            display: none;
+        }
+    }
