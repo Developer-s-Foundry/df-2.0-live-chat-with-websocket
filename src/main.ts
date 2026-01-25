@@ -65,8 +65,8 @@ webSocket.on('connection', (socket) => {
         }
     });
 
-    socket.on('typing', () => {
-        const receiverSocketId = activeUsers.get(socket.id);
+    socket.on('typing', (recieverId) => {
+        const receiverSocketId = activeUsers.get(recieverId);
         if (receiverSocketId) {
             webSocket.to(receiverSocketId).emit('typing', {
                 senderId: socket.id,
