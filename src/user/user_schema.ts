@@ -5,13 +5,15 @@ export interface IUser extends Document {
   socketId: string;
   email: string;
   password: string;
+  role: string;
 }
 
 // define the user schema
 const userSchema: Schema = new Schema({
   socketId: {type: String, required: false},
   email: {type: String, required: true, unique: true},
-  password: {type: String, required: true}
+  password: {type: String, required: true},
+  role: {type: String, default: 'customer'},
     },
   { 
     timestamps: true
