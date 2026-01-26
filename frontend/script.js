@@ -64,6 +64,8 @@ document.getElementById('register-form').addEventListener('submit', async(e) => 
     console.log('Register submitted');
 });
 
+let agentId;
+
 window.onload = () => {
     // get the id of user from local storage
   const userId = localStorage.getItem('userId');
@@ -75,6 +77,15 @@ window.onload = () => {
     //connect to socket
     connectToSocket()
 
+    // findAvalableAgent()
+    findAvalableAgent()
+
+    // load previous messages
+    loadMessages();
+
+
+    // send message
+    sendmessage()
 
 
     function connectToSocket() {
@@ -101,7 +112,74 @@ window.onload = () => {
             console.log('Typing indicator received:', recieverId);
             showTypingIndicator(recieverId);
         })
+            }
+    
+
+    function displayMessage(data, isSent) {
+        const messagesDiv = document.getElementById('chat-messages');
+        
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${isSent ? 'sent' : 'received'}`;
+        
+        const time = new Date(data.createdAt).toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        messageDiv.innerHTML = `
+            
+            ${escapeHtml(data.message)}
+            ${time}
+            
+        `;
+
+        messagesDiv.appendChild(messageDiv);
+        scrollToBottom();
+        }
+
+        function scrollToBottom() {
+        const messagesDiv = document.getElementById('messages');
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+        }
+
+        function showTypingIndicator(recieverId) {
+        const input = document.getElementById('message-input');
+        input.placeholder = `${recieverId} is typing...`;
+
+        setTimeout(() => {
+            input.placeholder = 'Type a message...';
+        }, 2000);        
+    }
+
+      async function findAvalableAgent() {
+        // Placeholder function to find an available agent
+        console.log('Finding available agent...');
+        // fetch any user with agent role from the server
+        try {
+            const response = await fetch('http://localhost:3000/users/role/agent', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            if (!response.ok) {
+                const error = await response.json();
+                console.error('Error finding agent:', error);
+            }
+            const agent = await response.json();
+                agentId = agent._id;
+                console.log('Available agent found:', agent);
+        } catch (error) {
+            console.error('Error finding agent:', error);
+        } 
         
     }
+  
 }
 

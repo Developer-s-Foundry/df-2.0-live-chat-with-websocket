@@ -1,13 +1,19 @@
-import express from 'express';
+import express, { json } from 'express';
 import http from 'http';
 import {Server as WebSocketServer} from 'socket.io';
 import dotenv from 'dotenv';
 import { connectDb } from './config/database';
 import { MessageRepository } from './message/message_repo';
+import { userRepo } from './user/user_repo';
+import { RegisterRoutes } from "";
 
 dotenv.config();
 
 const app = express();
+app.use(express.urlencoded({ extended: true }));
+app.use(json());
+
+RegisterRoutes(app);
 const server = http.createServer(app);
 const webSocket = new WebSocketServer(server, {
   cors: {
@@ -29,6 +35,8 @@ webSocket.on('connection', (socket) => {
 
     socket.on('user:connected', (userId: string) => {
     activeUsers.set(userId, socket.id);
+    // save user socketid
+    userRepo.updateUser(userId, socket.id);
     console.log(`User connected: ${userId} with socket ID: ${socket.id}`);
     });
 

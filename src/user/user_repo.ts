@@ -23,5 +23,17 @@ export const userRepo = {
       } 
     }
     return user;
-  }
+  },
+
+  updateUser: async (userId: string, socketId: string) => {
+    return userModel.findByIdAndUpdate(userId, {socketId}, {new: true});
+  },
+
+  upgradeToAgent: async (userId: string) => {
+    return userModel.findByIdAndUpdate(userId, {role: 'agent'}, {new: true});
+  },
+
+  fetchUserByRole: async (role: string) => {
+    return userModel.find({role});
+  } 
 };
