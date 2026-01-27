@@ -4,25 +4,52 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Live Support Chat</title>
-  <link rel="stylesheet" href="style2.css">
+  <link rel="stylesheet" href="./styles/chat.css">
 </head>
 <body>
   <div class="chat-container">
+    <!-- Header -->
     <div class="chat-header">
-      <h2>Live Support Chat</h2>
+      <div class="chat-header-left">
+        <button class="back-btn" onclick="goBack()">←</button>
+        <div class="chat-user-info">
+          <h2 id="other-user-name">Loading...</h2>
+          <p class="status-indicator">
+            <span class="status-dot" id="status-dot"></span>
+            <span id="status-text">Offline</span>
+          </p>
+        </div>
+      </div>
     </div>
 
-    <div class="chat-messages" id="chat-messages">
-      <!-- Messages will appear here -->
+    <!-- Messages Area -->
+    <div class="messages-container" id="messages">
+      <!-- Messages will be added here -->
     </div>
 
-    <div class="chat-input">
-      <input type="text" id="message-input" placeholder="Type a message...">
-      <button id="send-btn">Send</button>
+    <!-- Typing Indicator -->
+    <div class="typing-indicator" id="typing-indicator">
+      <span id="typing-user">User</span> is typing
+      <span class="typing-dots">
+        <span></span>
+        <span></span>
+        <span></span>
+      </span>
+    </div>
+
+    <!-- Input Area -->
+    <div class="input-container">
+      <input 
+        type="text" 
+        id="message-input" 
+        placeholder="Type a message..." 
+        autocomplete="off"
+      >
+      <button onclick="sendMessage()">Send</button>
     </div>
   </div>
+ <script src="https://cdn.socket.io/4.8.1/socket.io.min.js" integrity="sha384-mkQ3/7FUtcGyoppY6bz/PORYoGqOl7/aSUMn2ymDOJcapfS6PHqxhRTMh1RR0Q6+" crossorigin="anonymous"></script>
+  <script src="index.js"></script>
 
-  <script src="script.js"></script>
-  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </body>
 </html>

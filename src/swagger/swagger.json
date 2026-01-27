@@ -29,7 +29,13 @@
 				"description": "Make all properties in T required"
 			}
 		},
-		"securitySchemes": {}
+		"securitySchemes": {
+			"api-key": {
+				"type": "apiKey",
+				"in": "header",
+				"name": "Authorization"
+			}
+		}
 	},
 	"info": {
 		"title": "df-2.0-live-chat-with-websocket",
@@ -50,25 +56,40 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"allOf": [
+									"anyOf": [
 										{
-											"$ref": "#/components/schemas/mongoose.Document_unknown.__.IUser.__.___"
-										},
-										{
-											"$ref": "#/components/schemas/IUser"
-										},
-										{
-											"$ref": "#/components/schemas/Required___id-mongoose.Types.ObjectId__"
+											"allOf": [
+												{
+													"$ref": "#/components/schemas/mongoose.Document_unknown.__.IUser.__.___"
+												},
+												{
+													"$ref": "#/components/schemas/IUser"
+												},
+												{
+													"$ref": "#/components/schemas/Required___id-mongoose.Types.ObjectId__"
+												},
+												{
+													"properties": {
+														"__v": {
+															"type": "number",
+															"format": "double"
+														}
+													},
+													"required": [
+														"__v"
+													],
+													"type": "object"
+												}
+											]
 										},
 										{
 											"properties": {
-												"__v": {
-													"type": "number",
-													"format": "double"
+												"message": {
+													"type": "string"
 												}
 											},
 											"required": [
-												"__v"
+												"message"
 											],
 											"type": "object"
 										}
@@ -113,25 +134,43 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"allOf": [
-										{
-											"$ref": "#/components/schemas/mongoose.Document_unknown.__.IUser.__.___"
-										},
-										{
-											"$ref": "#/components/schemas/IUser"
-										},
-										{
-											"$ref": "#/components/schemas/Required___id-mongoose.Types.ObjectId__"
-										},
+									"anyOf": [
 										{
 											"properties": {
-												"__v": {
-													"type": "number",
-													"format": "double"
+												"message": {},
+												"token": {
+													"type": "string"
+												},
+												"role": {
+													"type": "string"
+												},
+												"email": {
+													"type": "string"
+												},
+												"id": {
+													"type": "string"
 												}
 											},
 											"required": [
-												"__v"
+												"token",
+												"role",
+												"email",
+												"id"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"token": {},
+												"role": {},
+												"email": {},
+												"id": {},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"message"
 											],
 											"type": "object"
 										}

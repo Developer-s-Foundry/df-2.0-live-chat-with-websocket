@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User List - Chat</title>
+  <link rel="stylesheet" href="./styles/user.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <div class="current-user">
+        <div class="avatar" id="current-user-avatar">A</div>
+        <div>
+          <h1>Messages</h1>
+          <p id="current-user-name" style="font-size: 14px; opacity: 0.9;"></p>
+        </div>
+      </div>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <!-- Search -->
+    <div class="search-container">
+      <input 
+        type="text" 
+        class="search-box" 
+        id="search-input" 
+        placeholder="Search users..."
+        onkeyup="filterUsers()"
+      >
+    </div>
+
+    <!-- Users List -->
+    <div class="users-list" id="users-list">
+      <div class="loading">
+        <div class="spinner"></div>
+        <p>Loading users...</p>
+      </div>
+    </div>
+  </div>
+   <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+   <script src="./scripts/user.js"></script>
+</body>
+</html>

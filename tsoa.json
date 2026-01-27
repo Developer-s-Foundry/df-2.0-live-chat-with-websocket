@@ -4,9 +4,17 @@
   "controllerPathGlobs": ["src/**/*controller.ts"],
   "spec": {
     "outputDirectory": "src/swagger",
-    "specVersion": 3
+    "specVersion": 3,
+    "securityDefinitions": {
+      "api-key": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization"
+      }
+    }
   },
   "routes": {
-    "routesDir": "src/swagger"
+    "routesDir": "src/swagger",
+    "authenticationModule": "src/middleware/auth_middleware.ts"
   }
 }
