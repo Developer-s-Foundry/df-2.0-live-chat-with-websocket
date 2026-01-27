@@ -122,18 +122,4 @@
         display: none;
     }
 
-    @media (max-width: 768px) {
-        .container {
-            flex-direction: column;
-            height: auto;
-        }
-
-        .form-container,
-        .info-section {
-            width: 100%;
-        }
-
-        .info-section {
-            display: none;
-        }
-    }
+   
