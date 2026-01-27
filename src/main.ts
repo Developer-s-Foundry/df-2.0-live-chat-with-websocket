@@ -147,6 +147,33 @@ webSocket.on("connection", (socket) => {
       }
     }
   });
+
+  socket.on(
+    "load:messages",
+    async (data: { userId: string; otherUserId: string }) => {
+      try {
+        // Fetch messages between the two users from the database
+        const messages = await new MessageRepository().getMessagesBetweenUsers(
+          data.userId,
+          data.otherUserId,
+        );
+
+        // Send the messages back to the requesting client
+        socket.emit("messages:loaded", {
+          messages: messages,
+          userId: data.userId,
+          otherUserId: data.otherUserId,
+        });
+
+        console.log(
+          `Loaded ${messages.length} messages for user ${data.userId}`,
+        );
+      } catch (error) {
+        socket.emit("error", { message: "Failed to load messages." });
+        console.error("Error loading messages:", error);
+      }
+    },
+  );
 });
 server.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`);
