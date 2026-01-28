@@ -9,6 +9,8 @@ import { RegisterRoutes } from "./swagger/routes";
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "./swagger/swagger.json";
 import cors from "cors";
+import { logger } from "./config/logger";
+import winston from 'winston'
 
 dotenv.config();
 
@@ -173,4 +175,13 @@ webSocket.on("connection", (socket) => {
 });
 server.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`);
+  //
+// If we're not in production then log to the `console` with the format:
+// `${info.level}: ${info.message} JSON.stringify({ ...rest }) `
+//
+if (process.env.NODE_ENV !== 'production') {
+  logger.add(new winston.transports.Console({
+    format: winston.format.simple(),
+  }));
+}
 });

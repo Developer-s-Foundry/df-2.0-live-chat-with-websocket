@@ -27,6 +27,9 @@
 				"properties": {},
 				"type": "object",
 				"description": "Make all properties in T required"
+			},
+			"mongoose.Types.ObjectId": {
+				"type": "string"
 			}
 		},
 		"securitySchemes": {
@@ -47,7 +50,7 @@
 		"contact": {}
 	},
 	"paths": {
-		"/users/register": {
+		"/api/users/register": {
 			"post": {
 				"operationId": "RegisterUser",
 				"responses": {
@@ -107,6 +110,9 @@
 						"application/json": {
 							"schema": {
 								"properties": {
+									"username": {
+										"type": "string"
+									},
 									"password": {
 										"type": "string"
 									},
@@ -115,6 +121,7 @@
 									}
 								},
 								"required": [
+									"username",
 									"password",
 									"email"
 								],
@@ -125,7 +132,7 @@
 				}
 			}
 		},
-		"/users/login": {
+		"/api/users/login": {
 			"post": {
 				"operationId": "LoginUser",
 				"responses": {
@@ -141,30 +148,25 @@
 												"token": {
 													"type": "string"
 												},
-												"role": {
+												"username": {
 													"type": "string"
 												},
-												"email": {
-													"type": "string"
-												},
-												"id": {
-													"type": "string"
+												"userId": {
+													"$ref": "#/components/schemas/mongoose.Types.ObjectId"
 												}
 											},
 											"required": [
 												"token",
-												"role",
-												"email",
-												"id"
+												"username",
+												"userId"
 											],
 											"type": "object"
 										},
 										{
 											"properties": {
 												"token": {},
-												"role": {},
-												"email": {},
-												"id": {},
+												"username": {},
+												"userId": {},
 												"message": {
 													"type": "string"
 												}
@@ -206,8 +208,8 @@
 				}
 			}
 		},
-		"/users/upgrade/{userId}": {
-			"post": {
+		"/api/users/upgrade/{userId}": {
+			"get": {
 				"operationId": "UpgradeToAgent",
 				"responses": {
 					"200": {
@@ -256,7 +258,7 @@
 				]
 			}
 		},
-		"/users/role/{role}": {
+		"/api/users/role/{role}": {
 			"get": {
 				"operationId": "FetchUsersByRole",
 				"responses": {
@@ -301,6 +303,59 @@
 					{
 						"in": "path",
 						"name": "role",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/users/get-all-users/{userId}": {
+			"get": {
+				"operationId": "FetchAllUsers",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"allOf": [
+											{
+												"$ref": "#/components/schemas/mongoose.Document_unknown.__.IUser.__.___"
+											},
+											{
+												"$ref": "#/components/schemas/IUser"
+											},
+											{
+												"$ref": "#/components/schemas/Required___id-mongoose.Types.ObjectId__"
+											},
+											{
+												"properties": {
+													"__v": {
+														"type": "number",
+														"format": "double"
+													}
+												},
+												"required": [
+													"__v"
+												],
+												"type": "object"
+											}
+										]
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "userId",
 						"required": true,
 						"schema": {
 							"type": "string"

@@ -1,3 +1,4 @@
+
 function toggleForms() {
     const loginForm = document.getElementById('login-form');
     const registerForm = document.getElementById('register-form');
@@ -19,7 +20,7 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
     const password = document.getElementById('login-password').value;
 
     try {
-        const response = await fetch('http://localhost:3000/users/login', {
+        const response = await fetch('http://localhost:3000/api/users/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -34,19 +35,23 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
         
         const data = await response.json();
         console.log(data.username + " has Login successful:");
-        const container = document.getElementById("container");
 
-        // create paragraph
-        const paragraph = document.createElement("p");
-        paragraph.textContent = `Welcome, ${data.username}!`;
+        // clear form fields
+        document.getElementById('login-email').value = '';
+        document.getElementById('login-password').value = '';
+        // const container = document.getElementById("container");
 
-        // append inside the div (after existing elements)
-        container.appendChild(paragraph);
+        // // create paragraph
+        // const paragraph = document.createElement("p");
+        // paragraph.textContent = `Welcome, ${data.username}!`;
+
+        // // append inside the div (after existing elements)
+        // container.appendChild(paragraph);
 
         localStorage.setItem('token', data.token);
         localStorage.setItem('username', data.username);
         localStorage.setItem('userId', data.userId);
-        window.location.href = '/user.html';
+        window.location.href = 'http://127.0.0.1:5501/DF-2.0-Live-Chat-With-Websocket/frontend/user.html';
         
     } catch (error) {
         console.error('Login error:', error);
@@ -59,6 +64,7 @@ document.getElementById('register-form').addEventListener('submit', async(e) => 
     // get form data and handle registration
     const email = document.getElementById('register-email').value;
     const password = document.getElementById('register-password').value;
+    const username = document.getElementById('register-username').value;
 
     // extra validation on email and password
     if (password.length < 6) {
@@ -71,25 +77,27 @@ document.getElementById('register-form').addEventListener('submit', async(e) => 
     }
 
     try {
-        const response = fetch('http://localhost:3000/users/register', {
+        const response = await fetch('http://localhost:3000/api/users/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ email, password })
+            body: JSON.stringify({ email, password, username })
         });
         if (!response.ok) {
             const error = await response.json();
             alert(error.message || 'Registration failed');
         } else {
             alert('Registration successful! Please log in.');
+            // clear form fields
+            document.getElementById('register-email').value = '';
+            document.getElementById('register-password').value = '';
+            document.getElementById('register-username').value = '';
             toggleForms();
         }
     } catch (error) {
-        console.error('Registration error:', error);
+        console.error('Registration error:' + error);
     }
-
-    console.log('Register submitted');
 });
 }
  

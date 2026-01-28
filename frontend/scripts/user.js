@@ -7,8 +7,9 @@
     let allUsers = [];
     let userId
 
-    // Initialize
-    window.onload = async () => {
+    loadJs();
+
+    async function loadJs () {
       // Check authentication
       const token = localStorage.getItem('token');
       currentUser = localStorage.getItem('username');
@@ -16,7 +17,7 @@
 
 
       if (!token || !currentUser) {
-        window.location.href = 'index.html';
+        window.location.href = 'http://127.0.0.1:5501/DF-2.0-Live-Chat-With-Websocket/frontend/index.html';
         return;
       }
 
@@ -31,8 +32,11 @@
 
       // Load users
       await loadUsers();
-    };
+    
+    }
 
+    
+      // all usable functions
     function connectSocket() {
       socket = io(SOCKET_URL);
 
@@ -62,6 +66,7 @@
     async function loadUsers() {
 
       try {
+        console.log(`${API_URL}/users/get-all-users/${userId}`)
         const response = await fetch(`${API_URL}/users/get-all-users/${userId}`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -69,11 +74,13 @@
           method: 'GET'
         });
 
-        const data = await response.json();
         
         if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+          console.log(`response is good`)
           // Filter out current user
-          displayUsers(data.allUsers);
+          displayUsers(data);
         } else {
           showError('Failed to load users');
         }
@@ -83,18 +90,22 @@
       }
     }
 
+    function displayEmptyStateOfUser() {
+        const usersList = document.getElementById('users-list');
+        usersList.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">👥</div>
+        <h3>No users yet</h3>
+        <p>Be the first to invite someone to chat!</p>
+        <button onclick="window.location.href='invite.html'">
+          Invite Users
+        </button>
+      </div>
+    `;
+    }
+
     function displayUsers(users) {
       const usersList = document.getElementById('users-list');
-
-      if (users.length === 0) {
-        usersList.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-state-icon">👥</div>
-            <p>No users found</p>
-          </div>
-        `;
-        return;
-      }
 
       usersList.innerHTML = users.map(user => `
         <div class="user-item " onclick="openChat('${user.id}', '${escapeHtml(user.username)}')">
