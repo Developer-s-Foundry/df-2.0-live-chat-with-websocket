@@ -6,7 +6,7 @@ import mongoose from "mongoose";
 
 
 export const userRepo = {
-  createUser: async (userData: {email: string; password: string}) => {
+  createUser: async (userData: {email: string; password: string, username: string}) => {
     // hash the password before saving
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(userData.password, salt);

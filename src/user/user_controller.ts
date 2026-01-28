@@ -12,7 +12,7 @@ export class UserController extends Controller {
   }
 
   @Post("register")
-  public async registerUser(@Body() requestBody: { email: string; password: string }) {
+  public async registerUser(@Body() requestBody: { email: string; password: string, username: string}) {
     // revalidate email and password here as well
     if (requestBody.password.length < 6) {
       this.setStatus(400); // Bad Request

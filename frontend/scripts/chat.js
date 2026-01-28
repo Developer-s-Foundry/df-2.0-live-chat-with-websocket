@@ -186,5 +186,5 @@ window.onload = () => {
         });
     }
 
-    function loadMessages() {   
-        
+    // function loadMessages() {   
+

@@ -19,7 +19,7 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
     const password = document.getElementById('login-password').value;
 
     try {
-        const response = await fetch('http://localhost:3000/users/login', {
+        const response = await fetch('http://localhost:3000/api/users/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -34,14 +34,16 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
         
         const data = await response.json();
         console.log(data.username + " has Login successful:");
-        const container = document.getElementById("container");
+        // clear the form
+        document.getElementById('login-form').reset();
+        // const container = document.getElementById("container");
 
-        // create paragraph
-        const paragraph = document.createElement("p");
-        paragraph.textContent = `Welcome, ${data.username}!`;
+        // // create paragraph
+        // const paragraph = document.createElement("p");
+        // paragraph.textContent = `Welcome, ${data.username}!`;
 
-        // append inside the div (after existing elements)
-        container.appendChild(paragraph);
+        // // append inside the div (after existing elements)
+        // container.appendChild(paragraph);
 
         localStorage.setItem('token', data.token);
         localStorage.setItem('username', data.username);
@@ -59,6 +61,7 @@ document.getElementById('register-form').addEventListener('submit', async(e) => 
     // get form data and handle registration
     const email = document.getElementById('register-email').value;
     const password = document.getElementById('register-password').value;
+    const username = document.getElementById('register-username').value;
 
     // extra validation on email and password
     if (password.length < 6) {
@@ -71,18 +74,20 @@ document.getElementById('register-form').addEventListener('submit', async(e) => 
     }
 
     try {
-        const response = fetch('http://localhost:3000/users/register', {
+        const response = fetch('http://localhost:3000/api/users/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ email, password })
+            body: JSON.stringify({ email, password, username })
         });
         if (!response.ok) {
             const error = await response.json();
             alert(error.message || 'Registration failed');
         } else {
             alert('Registration successful! Please log in.');
+            // clear form
+            document.getElementById('register-form').reset();
             toggleForms();
         }
     } catch (error) {
