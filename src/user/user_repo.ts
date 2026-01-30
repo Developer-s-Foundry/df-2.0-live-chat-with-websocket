@@ -30,7 +30,7 @@ export const userRepo = {
   },
 
   updateUser: async (userId: string, socketId: string, isOnline: boolean) => {
-    return await userModel.findByIdAndUpdate(new mongoose.Types.ObjectId(userId), {socketId}, {new: true});
+    return await userModel.findByIdAndUpdate(new mongoose.Types.ObjectId(userId), {socketId, isOnline}, {new: true});
   },
 
   upgradeToAgent: async (userId: string) => {
@@ -48,8 +48,7 @@ export const userRepo = {
         throw new Error("Invalid userId");
      }
     const users = await userModel.find({
-      _id: { $ne: new mongoose.Types.ObjectId(userId) },
-      role: 'agent'
+      _id: { $ne: new mongoose.Types.ObjectId(userId) }
     });
     return users;
   }

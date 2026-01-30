@@ -1,9 +1,13 @@
 // create new file message_repo.ts
 import { IMessage, MessageModel } from '../message/message_schema';
+import { logger } from '../config/logger';
+
+
 
 export class MessageRepository {
   // Create a new message
   async createMessage(senderId: string, receiverId: string, message: string): Promise<IMessage> {
+    logger.info(`the details im message repo ${senderId}, ${receiverId}, ${message}`)
     const newMessage = new MessageModel({ senderId, receiverId, message });
     return await newMessage.save();
   }

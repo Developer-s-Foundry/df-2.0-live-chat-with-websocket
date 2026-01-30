@@ -1,27 +1,37 @@
-let agentId;
+let agentData;
 let token;
 let currentUser;
 let userId;
 let typingTimeout;
-let socket;
+let socket = null;
 let otherUser;
 
-window.onload = () => {
-  token = localStorage.getItem("token");
-  currentUser = localStorage.getItem("username");
-  userId = localStorage.getItem("userId");
+
+
+ loadFunction();
+
+function loadFunction () {
+  token = sessionStorage.getItem("token");
+  currentUser = sessionStorage.getItem("username");
+  userId = sessionStorage.getItem("userId");
+  agentData = JSON.parse(sessionStorage.getItem("chatWithStr")); 
+
+
+  console.log(token)
+  console.log(currentUser)
 
   if (!token || !currentUser || !userId) {
-    window.location.href = "index.html";
+    window.location.href = "http://127.0.0.1:5501/DF-2.0-Live-Chat-With-Websocket/frontend/index.html";
     return;
   }
 
   console.log("Current User:", currentUser);
 
-  agentId = localStorage.getItem("chatWithStr");
-  if (!agentId) {
+ 
+  console.log('agent data' + agentData);
+  if (!agentData) {
     console.error("No agent selected for chat.");
-    window.location.href = "user.html";
+    window.location.href = "http://127.0.0.1:5501/DF-2.0-Live-Chat-With-Websocket/frontend/user.html";
     return;
   }
   // Get the message input element
@@ -38,25 +48,28 @@ window.onload = () => {
   });
 
   // Update UI with other user's info
-  document.getElementById("other-user-name").textContent = agentId.username;
+  document.getElementById("other-user-name").textContent = agentData.username;
 
   //connect to socket
   connectToSocket();
+
+
+  // send message
+  sendmessage();
+
   setupMessageLoading();
   //user typing indicators
   socket.on("useris:typing", (data) => {
-    if (data.senderId === agentId.id) {
+    if (data.senderId === agentData.id) {
       showTypingIndicator();
     }
   });
   socket.on("userstopped:typing", (data) => {
-    if (data.senderId === agentId.id) {
+    if (data.senderId === agentData.id) {
       hideTypingIndicator();
     }
   });
 
-  // send message
-  sendmessage();
 };
 
 function setupMessageLoading() {
@@ -78,6 +91,9 @@ function setupMessageLoading() {
 }
 
 function connectToSocket() {
+
+  if (socket) return socket
+
   socket = io("http://localhost:3000");
   socket.on("connect", () => {
     console.log("Connected to WebSocket server");
@@ -86,7 +102,7 @@ function connectToSocket() {
 
   socket.on("receive:message", (data) => {
     console.log("Message received:", data);
-    displayMessage(data, false);
+    displayMessage(data.message, false);
   });
 
   socket.on("message:sent", (data) => {
@@ -96,6 +112,7 @@ function connectToSocket() {
 
   // load previous messages
   loadMessages();
+  return socket
 }
 
 function displayMessage(data, isSent) {
@@ -158,15 +175,15 @@ function updateUserStatus(isOnline) {
 
 function handleTyping() {
   socket.emit("user:typing", {
-    senderId: currentUser.id,
-    receiverId: otherUser.id,
+    senderId: userId,
+    receiverId: agentData.id,
   });
 
   clearTimeout(typingTimeout);
   typingTimeout = setTimeout(() => {
     socket.emit("user:stop-typing", {
-      senderId: currentUser.id,
-      receiverId: otherUser.id,
+      senderId: userId,
+    receiverId: agentData.id,
     });
   }, 1000);
 }
@@ -175,15 +192,17 @@ function sendmessage() {
   // get message input when send button is clicked
   const messageInput = document.getElementById("message-input");
   const sendButton = document.getElementById("send-button");
+   console.log('agent data id fire' + agentData.id);
 
   sendButton.addEventListener("click", async () => {
     const message = messageInput.value.trim();
     if (!message) return;
 
     // send message to  server via websocket
+     console.log('agent data id' + agentData.id);
     socket.emit("send:message", {
       senderId: userId,
-      receiverId: agentId,
+      receiverId: agentData.id,
       message: message,
     });
 
@@ -191,7 +210,7 @@ function sendmessage() {
     displayMessage(
       {
         senderId: userId,
-        receiverId: agentId,
+        receiverId: agentData.id,
         message: message,
         createdAt: new Date(),
       },
@@ -199,12 +218,12 @@ function sendmessage() {
     );
 
     // clear input field
-    messageInput.value = "Type a message...";
+    messageInput.value = "";
   });
 }
 
 function loadMessages() {
-  if (!socket || !userId || !agentId) {
+  if (!socket || !userId || !agentData) {
     console.error("Cannot load messages: missing socket or user data");
     return;
   }
@@ -212,6 +231,6 @@ function loadMessages() {
   // Request messages from the server
   socket.emit("load:messages", {
     userId: userId,
-    otherUserId: agentId.id || agentId,
+    recieverId: agentData.id,
   });
 }

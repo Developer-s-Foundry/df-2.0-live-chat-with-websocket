@@ -11,8 +11,6 @@ function toggleForms() {
     }
 
 
-window.onload = () => {
-
 document.getElementById('login-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     // get form data and handle login
@@ -48,9 +46,9 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
         // // append inside the div (after existing elements)
         // container.appendChild(paragraph);
 
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('username', data.username);
-        localStorage.setItem('userId', data.userId);
+        sessionStorage.setItem('token', data.token);
+        sessionStorage.setItem('username', data.username);
+        sessionStorage.setItem('userId', data.userId);
         window.location.href = 'http://127.0.0.1:5501/DF-2.0-Live-Chat-With-Websocket/frontend/user.html';
         
     } catch (error) {
@@ -99,6 +97,5 @@ document.getElementById('register-form').addEventListener('submit', async(e) => 
         console.error('Registration error:' + error);
     }
 });
-}
  
 
