@@ -1,7 +1,8 @@
-// class that creates and login users to the database
+
 import { userModel } from "./user_schema";
 import bcrypt from 'bcrypt';
 import mongoose from "mongoose";
+import { logger } from "../config/logger";
 
 
 
@@ -17,7 +18,7 @@ export const userRepo = {
 
 
   loginUser: async(email: string, password: string) => {
-    const user =  await userModel.findOne({email, password});
+    const user =  await userModel.findOne({email});
     // compare hashed passwords
     if (user) {
       const isMatch = await bcrypt.compare(password, user.password);
@@ -29,7 +30,7 @@ export const userRepo = {
   },
 
   updateUser: async (userId: string, socketId: string, isOnline: boolean) => {
-    return await userModel.findByIdAndUpdate(new mongoose.Types.ObjectId(userId), {socketId}, {new: true});
+    return await userModel.findByIdAndUpdate(new mongoose.Types.ObjectId(userId), {socketId, isOnline}, {new: true});
   },
 
   upgradeToAgent: async (userId: string) => {
@@ -42,10 +43,10 @@ export const userRepo = {
   },
 
   fetchAllUsers: async (userId: string) => {
-      if (!mongoose.Types.ObjectId.isValid(userId)) {
-    throw new Error("Invalid userId");
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+        logger.error(`user id is: ${userId}`)
+        throw new Error("Invalid userId");
      }
-
     const users = await userModel.find({
       _id: { $ne: new mongoose.Types.ObjectId(userId) }
     });

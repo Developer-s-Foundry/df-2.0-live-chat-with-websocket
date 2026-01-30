@@ -1,40 +1,25 @@
+//  console.trace("SCRIPT LOADED", location.pathname);
 
-    const API_URL = 'http://localhost:3000/api';
-    const SOCKET_URL = 'http://localhost:3000';
-    
-    let socket;
-    let currentUser;
-    let allUsers = [];
-    let userId
+  const API_URL = 'http://localhost:3000/api';
+  const SOCKET_URL = 'http://localhost:3000';
 
-    // Initialize
-    window.onload = async () => {
-      // Check authentication
-      const token = localStorage.getItem('token');
-      currentUser = localStorage.getItem('username');
-      userId = localStorage.getItem('userId');
+  let socket = null;
+  let currentUser;
+  let allUsers = [];
+  let userId
+  
+
+     // Check authentication
+      const token = sessionStorage.getItem('token');
+      currentUser = sessionStorage.getItem('username');
+      userId = sessionStorage.getItem('userId');
+
+  // await loadJs();
 
 
-      if (!token || !currentUser) {
-        window.location.href = 'index.html';
-        return;
-      }
+  async function connectSocket() {
 
-      
-      // Display current user
-      document.getElementById('current-user-name').textContent = currentUser;
-      document.getElementById('current-user-avatar').textContent = 
-        currentUser.charAt(0).toUpperCase();
-
-      // Connect to Socket.io for real-time status
-      connectSocket();
-
-      // Load users
-      await loadUsers();
-    };
-
-    function connectSocket() {
-      socket = io(SOCKET_URL);
+      socket = io(SOCKET_URL)
 
       socket.on('connect', () => {
         socket.emit('user:connected',{
@@ -51,7 +36,6 @@
       socket.on('user:is-offline', (userData) => {
         updateUserStatus(userData.userId, false);
       });
-
       // Listen for new messages (to show unread count)
       // socket.on('receive-message', (data) => {
       //   updateUnreadCount(data.senderId);
@@ -62,18 +46,21 @@
     async function loadUsers() {
 
       try {
+        console.log(`${API_URL}/users/get-all-users/${userId}`)
         const response = await fetch(`${API_URL}/users/get-all-users/${userId}`, {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
+            'Authorization': `Bearer ${sessionStorage.getItem('token')}`
           },
           method: 'GET'
         });
 
-        const data = await response.json();
         
         if (response.ok) {
-          // Filter out current user
-          displayUsers(data.allUsers);
+          const data = await response.json();
+          console.log(data);
+          console.log(`response is good`)
+          allUsers.push(...data)
+          displayUsers(data);
         } else {
           showError('Failed to load users');
         }
@@ -83,21 +70,25 @@
       }
     }
 
+    function displayEmptyStateOfUser() {
+        const usersList = document.getElementById('users-list');
+        usersList.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">👥</div>
+        <h3>No users yet</h3>
+        <p>Be the first to invite someone to chat!</p>
+        <button onclick="window.location.href='invite.html'">
+          Invite Users
+        </button>
+      </div>
+    `;
+    }
+
     function displayUsers(users) {
       const usersList = document.getElementById('users-list');
 
-      if (users.length === 0) {
-        usersList.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-state-icon">👥</div>
-            <p>No users found</p>
-          </div>
-        `;
-        return;
-      }
-
       usersList.innerHTML = users.map(user => `
-        <div class="user-item " onclick="openChat('${user.id}', '${escapeHtml(user.username)}')">
+        <div class="user-item " onclick="openChat('${user._id}', '${escapeHtml(user.username)}')">
           <div class="user-avatar">${user.username.charAt(0).toUpperCase()}</div>
           <div class="user-info">
             <div class="user-name">
@@ -117,14 +108,21 @@
     }
 
     function filterUsers() {
+     
       const searchTerm = document.getElementById('search-input').value.toLowerCase();
-      
+       
+      console.log(searchTerm)
+      console.log (allUsers)
       const filteredUsers = allUsers.filter(user => 
         user.username.toLowerCase().includes(searchTerm) ||
         user.email.toLowerCase().includes(searchTerm)
       );
-
       displayUsers(filteredUsers);
+       if (searchTerm === '') {
+         displayUsers(allUsers); // SHOW ALL
+        return;
+      }
+      
     }
 
     function updateUserStatus(userId, isOnline) {
@@ -157,8 +155,8 @@
     // }
 
     function openChat(userId, username) {
-      // Store selected user in localStorage
-      localStorage.setItem('chatWithStr', JSON.stringify({
+      // Store selected user in sessionStorage
+      sessionStorage.setItem('chatWithStr', JSON.stringify({
         id: userId,
         username: username
       }));
@@ -187,8 +185,36 @@
       if (socket) {
         socket.disconnect();
       }
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      localStorage.removeItem('chatWith');
+      sessionStorage.removeItem('token');
+      sessionStorage.removeItem('user');
+      sessionStorage.removeItem('chatWith');
       window.location.href = 'login.html';
     }
+
+
+
+    async function loadJs () {
+   
+
+      // if (!token || !currentUser) {
+      //   window.location.href = 'http://127.0.0.1:5501/DF-2.0-Live-Chat-With-Websocket/frontend/index.html';
+      //   return;
+      // }
+
+      
+      // Display current user
+      document.getElementById('current-user-name').textContent = currentUser;
+      document.getElementById('current-user-avatar').textContent = 
+        currentUser.charAt(0).toUpperCase();
+
+      // Connect to Socket.io for real-time status
+      await connectSocket();
+
+      // Load users
+      // await loadUsers();
+    
+    }
+
+    
+      // all usable functions
+    

@@ -110,6 +110,9 @@
 						"application/json": {
 							"schema": {
 								"properties": {
+									"username": {
+										"type": "string"
+									},
 									"password": {
 										"type": "string"
 									},
@@ -118,6 +121,7 @@
 									}
 								},
 								"required": [
+									"username",
 									"password",
 									"email"
 								],
@@ -205,7 +209,7 @@
 			}
 		},
 		"/api/users/upgrade/{userId}": {
-			"post": {
+			"get": {
 				"operationId": "UpgradeToAgent",
 				"responses": {
 					"200": {
@@ -308,7 +312,7 @@
 			}
 		},
 		"/api/users/get-all-users/{userId}": {
-			"post": {
+			"get": {
 				"operationId": "FetchAllUsers",
 				"responses": {
 					"200": {

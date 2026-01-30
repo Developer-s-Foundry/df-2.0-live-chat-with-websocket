@@ -226,7 +226,8 @@
       color: #1976d2;
     }
 
-    .role-badge.support {
+    .role-badge.support,
+    .role-badge.agent {
       background: #f3e5f5;
       color: #7b1fa2;
     }

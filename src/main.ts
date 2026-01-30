@@ -9,6 +9,8 @@ import { RegisterRoutes } from "./swagger/routes";
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "./swagger/swagger.json";
 import cors from "cors";
+import { logger } from "./config/logger";
+import winston from 'winston'
 
 dotenv.config();
 
@@ -49,11 +51,12 @@ webSocket.on("connection", (socket) => {
       socketId: socket.id,
       username: data.username,
     });
-    // save user socketid
+    // save user socketid and online status is changed
     userRepo.updateUser(data.userId, socket.id, true);
-    console.log(`User connected: ${data.userId} with socket ID: ${socket.id}`);
+    logger.info(`User got updated to db: ${data.userId} with socket ID: ${socket.id}`);
 
-    // Notify all users that a user is online
+    
+    // Notify all other users that a user is online
     socket.broadcast.emit("user:is-online", {
       userId: data.userId,
       username: data.username,
@@ -62,11 +65,11 @@ webSocket.on("connection", (socket) => {
 
   // listen for user disconnection and remove from active users
   socket.on("disconnect", () => {
-    console.log(`User disconnected: ${socket.id}`);
+    logger.info(`User disconnected: ${socket.id}`);
     for (const [userId, data] of activeUsers.entries()) {
       if (data.socketId === socket.id) {
         activeUsers.delete(userId);
-        console.log(`User disconnected: ${userId}`);
+        logger.info(`active user got disconnected: ${userId}`);
         // Notify all users that a user is offline
         socket.broadcast.emit("user:is-offline", {
           userId: userId,
@@ -87,15 +90,18 @@ webSocket.on("connection", (socket) => {
           data.receiverId,
           data.message,
         );
+        logger.info(`user ${data.receiverId} recieved their message`);
 
         // Emit message to receiver if online
         const activeData = activeUsers.get(data.receiverId);
+
         if (activeData?.socketId) {
+          logger.info(`the user socketId is available ${activeData.socketId}`)
           webSocket.to(activeData.socketId).emit("receive:message", {
             senderId: data.senderId,
             message: data.message,
           });
-          console.log(
+          logger.info(
             `Message sent from ${data.senderId} to ${data.receiverId}`,
           );
         }
@@ -119,7 +125,7 @@ webSocket.on("connection", (socket) => {
     const receiverData = activeUsers.get(data.recieverId);
     if (receiverData?.socketId) {
       webSocket.to(receiverData.socketId).emit("useris:typing", {
-        senderId: socket.id,
+        senderId: data.senderId,
       });
     }
   });
@@ -128,7 +134,7 @@ webSocket.on("connection", (socket) => {
     const receiverData = activeUsers.get(data.recieverId);
     if (receiverData?.socketId) {
       webSocket.to(receiverData.socketId).emit("userstopped:typing", {
-        senderId: socket.id,
+        senderId: data.senderId,
       });
     }
   });
@@ -173,4 +179,13 @@ webSocket.on("connection", (socket) => {
 });
 server.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`);
+  //
+// If we're not in production then log to the `console` with the format:
+// `${info.level}: ${info.message} JSON.stringify({ ...rest }) `
+//
+if (process.env.NODE_ENV !== 'production') {
+  logger.add(new winston.transports.Console({
+    format: winston.format.simple(),
+  }));
+}
 });

@@ -63,7 +63,7 @@ export function RegisterRoutes(app: Router) {
 
     
         const argsUserController_registerUser: Record<string, TsoaRoute.ParameterSchema> = {
-                requestBody: {"in":"body","name":"requestBody","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"password":{"dataType":"string","required":true},"email":{"dataType":"string","required":true}}},
+                requestBody: {"in":"body","name":"requestBody","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"username":{"dataType":"string","required":true},"password":{"dataType":"string","required":true},"email":{"dataType":"string","required":true}}},
         };
         app.post('/api/users/register',
             ...(fetchMiddlewares<RequestHandler>(UserController)),
@@ -185,7 +185,7 @@ export function RegisterRoutes(app: Router) {
         const argsUserController_fetchAllUsers: Record<string, TsoaRoute.ParameterSchema> = {
                 userId: {"in":"path","name":"userId","required":true,"dataType":"string"},
         };
-        app.post('/api/users/get-all-users/:userId',
+        app.get('/api/users/get-all-users/:userId',
             ...(fetchMiddlewares<RequestHandler>(UserController)),
             ...(fetchMiddlewares<RequestHandler>(UserController.prototype.fetchAllUsers)),
 

@@ -1,6 +1,7 @@
 import { Controller, Route, Post, Get, Path, Body, Res } from "tsoa";
 import { userRepo } from "./user_repo";
 import * as jwt from "jsonwebtoken";
+import { logger } from "../config/logger";
 
 @Route("api/users")
 export class UserController extends Controller {
@@ -51,7 +52,7 @@ export class UserController extends Controller {
     return { message: "Invalid credentials" };
   }
 
-  @Post("upgrade/:userId")
+  @Get("upgrade/:userId")
   public async upgradeToAgent(@Path() userId: string) {
     return this.userService.upgradeToAgent(userId);
   }
@@ -62,8 +63,9 @@ export class UserController extends Controller {
     return user;
   }
 
-  @Post("get-all-users/:userId")
+  @Get("get-all-users/:userId")
   public async fetchAllUsers(@Path() userId: string) {
-    return this.userService.fetchAllUsers(userId);
+    logger.info(`the userID is ${userId}`)
+    return await this.userService.fetchAllUsers(userId);
   }
 }
