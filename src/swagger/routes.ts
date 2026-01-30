@@ -125,7 +125,7 @@ export function RegisterRoutes(app: Router) {
         const argsUserController_upgradeToAgent: Record<string, TsoaRoute.ParameterSchema> = {
                 userId: {"in":"path","name":"userId","required":true,"dataType":"string"},
         };
-        app.get('/api/users/upgrade/:userId',
+        app.post('/api/users/upgrade/:userId',
             ...(fetchMiddlewares<RequestHandler>(UserController)),
             ...(fetchMiddlewares<RequestHandler>(UserController.prototype.upgradeToAgent)),
 
